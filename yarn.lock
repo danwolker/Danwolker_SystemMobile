@@ -3004,12 +3004,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"asynckit@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "asynckit@npm:0.4.0"
+  checksum: 10c0/d73e2ddf20c4eb9337e1b3df1a0f6159481050a5de457c55b14ea2e5cb6d90bb69e004c9af54737a5ee0917fcf2c9e25de67777bbe58261847846066ba75bc9d
+  languageName: node
+  linkType: hard
+
 "available-typed-arrays@npm:^1.0.7":
   version: 1.0.7
   resolution: "available-typed-arrays@npm:1.0.7"
   dependencies:
     possible-typed-array-names: "npm:^1.0.0"
   checksum: 10c0/d07226ef4f87daa01bd0fe80f8f310982e345f372926da2e5296aecc25c41cab440916bbaa4c5e1034b453af3392f67df5961124e4b586df1e99793a1374bdb2
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.10.0":
+  version: 1.10.0
+  resolution: "axios@npm:1.10.0"
+  dependencies:
+    follow-redirects: "npm:^1.15.6"
+    form-data: "npm:^4.0.0"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10c0/2239cb269cc789eac22f5d1aabd58e1a83f8f364c92c2caa97b6f5cbb4ab2903d2e557d9dc670b5813e9bcdebfb149e783fb8ab3e45098635cd2f559b06bd5d8
   languageName: node
   linkType: hard
 
@@ -3587,6 +3605,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"combined-stream@npm:^1.0.8":
+  version: 1.0.8
+  resolution: "combined-stream@npm:1.0.8"
+  dependencies:
+    delayed-stream: "npm:~1.0.0"
+  checksum: 10c0/0dbb829577e1b1e839fa82b40c07ffaf7de8a09b935cadd355a73652ae70a88b4320db322f6634a4ad93424292fa80973ac6480986247f1734a1137debf271d5
+  languageName: node
+  linkType: hard
+
 "commander@npm:^12.0.0":
   version: 12.1.0
   resolution: "commander@npm:12.1.0"
@@ -3855,6 +3882,13 @@ __metadata:
     has-property-descriptors: "npm:^1.0.0"
     object-keys: "npm:^1.1.1"
   checksum: 10c0/88a152319ffe1396ccc6ded510a3896e77efac7a1bfbaa174a7b00414a1747377e0bb525d303794a47cf30e805c2ec84e575758512c6e44a993076d29fd4e6c3
+  languageName: node
+  linkType: hard
+
+"delayed-stream@npm:~1.0.0":
+  version: 1.0.0
+  resolution: "delayed-stream@npm:1.0.0"
+  checksum: 10c0/d758899da03392e6712f042bec80aa293bbe9e9ff1b2634baae6a360113e708b91326594c8a486d475c69d6259afb7efacdc3537bfcda1c6c648e390ce601b19
   languageName: node
   linkType: hard
 
@@ -4948,6 +4982,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"follow-redirects@npm:^1.15.6":
+  version: 1.15.9
+  resolution: "follow-redirects@npm:1.15.9"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: 10c0/5829165bd112c3c0e82be6c15b1a58fa9dcfaede3b3c54697a82fe4a62dd5ae5e8222956b448d2f98e331525f05d00404aba7d696de9e761ef6e42fdc780244f
+  languageName: node
+  linkType: hard
+
 "fontfaceobserver@npm:^2.1.0":
   version: 2.3.0
   resolution: "fontfaceobserver@npm:2.3.0"
@@ -4971,6 +5015,19 @@ __metadata:
     cross-spawn: "npm:^7.0.6"
     signal-exit: "npm:^4.0.1"
   checksum: 10c0/8986e4af2430896e65bc2788d6679067294d6aee9545daefc84923a0a4b399ad9c7a3ea7bd8c0b2b80fdf4a92de4c69df3f628233ff3224260e9c1541a9e9ed3
+  languageName: node
+  linkType: hard
+
+"form-data@npm:^4.0.0":
+  version: 4.0.3
+  resolution: "form-data@npm:4.0.3"
+  dependencies:
+    asynckit: "npm:^0.4.0"
+    combined-stream: "npm:^1.0.8"
+    es-set-tostringtag: "npm:^2.1.0"
+    hasown: "npm:^2.0.2"
+    mime-types: "npm:^2.1.12"
+  checksum: 10c0/f0cf45873d600110b5fadf5804478377694f73a1ed97aaa370a74c90cebd7fe6e845a081171668a5476477d0d55a73a4e03d6682968fa8661eac2a81d651fcdb
   languageName: node
   linkType: hard
 
@@ -6699,7 +6756,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-types@npm:^2.1.27, mime-types@npm:~2.1.34":
+"mime-types@npm:^2.1.12, mime-types@npm:^2.1.27, mime-types@npm:~2.1.34":
   version: 2.1.35
   resolution: "mime-types@npm:2.1.35"
   dependencies:
@@ -7510,6 +7567,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"proxy-from-env@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "proxy-from-env@npm:1.1.0"
+  checksum: 10c0/fe7dd8b1bdbbbea18d1459107729c3e4a2243ca870d26d34c2c1bcd3e4425b7bcc5112362df2d93cc7fb9746f6142b5e272fd1cc5c86ddf8580175186f6ad42b
+  languageName: node
+  linkType: hard
+
 "punycode@npm:^2.1.0, punycode@npm:^2.1.1":
   version: 2.3.1
   resolution: "punycode@npm:2.3.1"
@@ -7630,6 +7694,17 @@ __metadata:
   version: 19.1.0
   resolution: "react-is@npm:19.1.0"
   checksum: 10c0/b6c6cadd172d5d39f66d493700d137a5545c294a62ce0f8ec793d59794c97d2bed6bad227626f16bd0e90004ed7fdc8ed662a004e6edcf5d2b7ecb6e3040ea6b
+  languageName: node
+  linkType: hard
+
+"react-native-dotenv@npm:^3.4.11":
+  version: 3.4.11
+  resolution: "react-native-dotenv@npm:3.4.11"
+  dependencies:
+    dotenv: "npm:^16.4.5"
+  peerDependencies:
+    "@babel/runtime": ^7.20.6
+  checksum: 10c0/9ed4a37fb59030706d17a1cc49d05af9d8fc57dcb2ef97e122b844f3ab6f6331ebc089afac559fe5bddf37806aa282b4118005f1b27aae5e37fdc3fc8bd7625c
   languageName: node
   linkType: hard
 
@@ -8823,6 +8898,7 @@ __metadata:
     "@react-navigation/elements": "npm:^2.3.8"
     "@react-navigation/native": "npm:^7.1.6"
     "@types/react": "npm:~19.0.10"
+    axios: "npm:^1.10.0"
     eslint: "npm:^9.25.0"
     eslint-config-expo: "npm:~9.2.0"
     expo: "npm:~53.0.12"
@@ -8841,6 +8917,7 @@ __metadata:
     react: "npm:19.0.0"
     react-dom: "npm:19.0.0"
     react-native: "npm:0.79.4"
+    react-native-dotenv: "npm:^3.4.11"
     react-native-gesture-handler: "npm:~2.24.0"
     react-native-reanimated: "npm:~3.17.4"
     react-native-safe-area-context: "npm:5.4.0"
