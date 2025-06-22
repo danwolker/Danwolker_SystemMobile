@@ -44,7 +44,7 @@ function recoverPassword($pdo, $email) {
     $stmt = $pdo->prepare("UPDATE users SET recovery_token = ?, updated_at = CURRENT_TIMESTAMP WHERE email = ?");
     $stmt->execute([$token, $email]);
 
-    $reset_link = "https://gold-raccoon-197919.hostingersite.com/reset-password?token=$token&email=" . urlencode($email);
+    $reset_link = "https://gold-raccoon-197919.hostingersite.com/reset-password.html?token=$token&email=" . urlencode($email);
 
     $mail = new PHPMailer(true);
     try {
