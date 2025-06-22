@@ -4,11 +4,6 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
 include 'config.php';
 
 $input = $_POST;
@@ -17,6 +12,7 @@ if (empty($input)) {
 }
 
 $userInput = trim($input['user'] ?? '');
+$password = trim($input['password'] ?? '');
 
 if (empty($userInput) || empty($password)) {
     echo json_encode(['status' => 'error', 'message' => 'Usuário (email ou nome de usuário) e senha obrigatórios']);
