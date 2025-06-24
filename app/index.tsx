@@ -25,6 +25,10 @@ export default function App() {
 
     const styles = getStyles(isDark);
 
+    const logoSource = isDark
+        ? require('../assets/images/logodw.png')
+        : require('../assets/images/logodw-dark.png');
+
     const handleRegister = async () => {
         try {
             const response = await axios.post(`${API_HOST}/register.php`, {
@@ -74,18 +78,16 @@ export default function App() {
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* Botão discreto para mudar o tema */}
-           <TouchableOpacity style={styles.hiddenToggleButton} onPress={toggleTheme}>
-  <Ionicons
-    name={isDark ? 'moon-outline' : 'sunny-outline'}
-    size={22}
-    color={isDark ? '#fff' : '#333'}
-  />
-</TouchableOpacity>
-
+            <TouchableOpacity style={styles.hiddenToggleButton} onPress={toggleTheme}>
+                <Ionicons
+                    name={isDark ? 'moon-outline' : 'sunny-outline'}
+                    size={22}
+                    color={isDark ? '#fff' : '#333'}
+                />
+            </TouchableOpacity>
 
             <Image
-                source={require('../assets/images/logodw.png')}
+                source={logoSource}
                 style={styles.logo}
                 resizeMode="contain"
             />
@@ -94,7 +96,7 @@ export default function App() {
                 <Text style={styles.label}>Email ou Nome de Usuário:</Text>
                 <TextInput
                     placeholder="Digite seu email ou usuário"
-                    placeholderTextColor="#ffffff"
+                    placeholderTextColor={isDark ? '#ccc' : '#888'}
                     value={loginInput}
                     onChangeText={setLoginInput}
                     style={styles.input}
@@ -107,7 +109,7 @@ export default function App() {
                 <View style={styles.passwordContainer}>
                     <TextInput
                         placeholder="Digite sua senha"
-                        placeholderTextColor="#ffffff"
+                        placeholderTextColor={isDark ? '#ccc' : '#888'}
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry={!showPasswordLogin}
@@ -152,7 +154,7 @@ export default function App() {
                             <Text style={styles.label}>Email:</Text>
                             <TextInput
                                 placeholder="Digite seu email"
-                                placeholderTextColor="#ffffff"
+                                placeholderTextColor={isDark ? '#ccc' : '#888'}
                                 value={email}
                                 onChangeText={setEmail}
                                 style={styles.input}
@@ -164,7 +166,7 @@ export default function App() {
                             <Text style={styles.label}>Nome de Usuário:</Text>
                             <TextInput
                                 placeholder="Digite seu nome de usuário"
-                                placeholderTextColor="#ffffff"
+                                placeholderTextColor={isDark ? '#ccc' : '#888'}
                                 value={username}
                                 onChangeText={setUsername}
                                 style={styles.input}
@@ -177,7 +179,7 @@ export default function App() {
                             <View style={styles.passwordContainer}>
                                 <TextInput
                                     placeholder="Digite sua senha"
-                                    placeholderTextColor="#ffffff"
+                                    placeholderTextColor={isDark ? '#ccc' : '#888'}
                                     value={passwordNew}
                                     onChangeText={setPasswordNew}
                                     secureTextEntry={!showPasswordRegister}
@@ -244,18 +246,9 @@ const getStyles = (isDark: boolean) =>
             width: 220,
             height: 120,
             marginBottom: 20,
-            tintColor: '#ffffff',
         },
-        inputContainer: {
-            width: '100%',
-            marginBottom: 12,
-        },
-        label: {
-            alignSelf: 'flex-start',
-            marginBottom: 4,
-            color: isDark ? '#e0e0e0' : '#333',
-            fontWeight: 'bold',
-        },
+        inputContainer: { width: '100%', marginBottom: 12 },
+        label: { alignSelf: 'flex-start', marginBottom: 4, color: isDark ? '#e0e0e0' : '#333', fontWeight: 'bold' },
         input: {
             borderWidth: 1,
             borderColor: isDark ? '#666' : '#ccc',
@@ -273,11 +266,7 @@ const getStyles = (isDark: boolean) =>
             paddingHorizontal: 10,
             backgroundColor: isDark ? '#333' : '#fff',
         },
-        passwordInput: {
-            flex: 1,
-            height: 40,
-            color: isDark ? '#fff' : '#000',
-        },
+        passwordInput: { flex: 1, height: 40, color: isDark ? '#fff' : '#000' },
         button: {
             backgroundColor: isDark ? '#1565C0' : '#1976D2',
             paddingVertical: 12,
@@ -285,63 +274,15 @@ const getStyles = (isDark: boolean) =>
             marginTop: 8,
             width: '100%',
         },
-        buttonText: {
-            color: '#fff',
-            fontWeight: 'bold',
-            textAlign: 'center',
-        },
-        footerText: {
-            marginTop: 18,
-            color: isDark ? '#aaa' : '#555',
-        },
-        linkText: {
-            color: '#42A5F5',
-            fontWeight: 'bold',
-        },
-        message: {
-            marginTop: 10,
-            color: '#FF6B6B',
-            textAlign: 'center',
-        },
-        modalContainer: {
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0.7)',
-        },
-        modalContent: {
-            backgroundColor: isDark ? '#2c2c2c' : '#fff',
-            padding: 20,
-            borderRadius: 10,
-            width: '85%',
-        },
-        modalTitle: {
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 10,
-            textAlign: 'center',
-            color: isDark ? '#fff' : '#000',
-        },
-        modalMessage: {
-            fontSize: 15,
-            textAlign: 'center',
-            marginBottom: 10,
-            color: isDark ? '#ddd' : '#333',
-        },
-        modalButton: {
-            backgroundColor: '#1565C0',
-            paddingVertical: 10,
-            borderRadius: 8,
-            marginTop: 10,
-        },
-        modalButtonText: {
-            color: '#fff',
-            fontWeight: 'bold',
-            textAlign: 'center',
-        },
-        closeText: {
-            color: '#FF6B6B',
-            textAlign: 'center',
-            marginTop: 10,
-        },
+        buttonText: { color: '#fff', fontWeight: 'bold', textAlign: 'center' },
+        footerText: { marginTop: 18, color: isDark ? '#aaa' : '#555' },
+        linkText: { color: '#42A5F5', fontWeight: 'bold' },
+        message: { marginTop: 10, color: '#FF6B6B', textAlign: 'center' },
+        modalContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.7)' },
+        modalContent: { backgroundColor: isDark ? '#2c2c2c' : '#fff', padding: 20, borderRadius: 10, width: '85%' },
+        modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, textAlign: 'center', color: isDark ? '#fff' : '#000' },
+        modalMessage: { fontSize: 15, textAlign: 'center', marginBottom: 10, color: isDark ? '#ddd' : '#333' },
+        modalButton: { backgroundColor: '#1565C0', paddingVertical: 10, borderRadius: 8, marginTop: 10 },
+        modalButtonText: { color: '#fff', fontWeight: 'bold', textAlign: 'center' },
+        closeText: { color: '#FF6B6B', textAlign: 'center', marginTop: 10 },
     });
