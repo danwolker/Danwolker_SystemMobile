@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useThemeStore } from '../store/useThemeStore';
 
 export default function NotesScreen() {
@@ -8,33 +8,32 @@ export default function NotesScreen() {
   const styles = getStyles(isDark);
 
   const [selectedSubMenu, setSelectedSubMenu] = useState<'todas' | 'nova' | 'excluir'>('todas');
+  const [loading, setLoading] = useState(false);
 
   const mockNotas = [
-    {
-      id: 1,
-      numero: 'NF001',
-      fornecedor: 'Fornecedor A',
-      valor: 'R$ 500,00',
-      vencimento: '2025-07-15',
-    },
-    {
-      id: 2,
-      numero: 'NF002',
-      fornecedor: 'Fornecedor B',
-      valor: 'R$ 800,00',
-      vencimento: '2025-07-20',
-    },
+    { id: 1, descricao: 'Nota Fiscal 001', valor: 'R$ 500', vencimento: '2025-07-30' },
+    { id: 2, descricao: 'Nota Fiscal 002', valor: 'R$ 700', vencimento: '2025-08-05' },
   ];
 
-  const handleSave = () => {
-    Alert.alert('Sucesso', 'Nota salva com sucesso!');
+  const handleSubMenuChange = (menu: typeof selectedSubMenu) => {
+    setLoading(true);
+    setTimeout(() => {
+      setSelectedSubMenu(menu);
+      setLoading(false);
+    }, 800);
   };
 
-  const handleDelete = () => {
+  const handleSaveNote = () => {
+    Alert.alert('Sucesso', 'Nota adicionada com sucesso!');
+  };
+
+  const handleDeleteNote = () => {
     Alert.alert('Excluído', 'Nota excluída com sucesso!');
   };
 
   const renderContent = () => {
+    if (loading) return <ActivityIndicator size="large" color={isDark ? '#fff' : '#000'} />;
+
     switch (selectedSubMenu) {
       case 'todas':
         return (
@@ -42,8 +41,7 @@ export default function NotesScreen() {
             <Text style={styles.title}>Todas as Notas:</Text>
             {mockNotas.map((nota) => (
               <View key={nota.id} style={styles.card}>
-                <Text style={styles.cardText}>Número: {nota.numero}</Text>
-                <Text style={styles.cardText}>Fornecedor: {nota.fornecedor}</Text>
+                <Text style={styles.cardText}>Descrição: {nota.descricao}</Text>
                 <Text style={styles.cardText}>Valor: {nota.valor}</Text>
                 <Text style={styles.cardText}>Vencimento: {nota.vencimento}</Text>
               </View>
@@ -54,11 +52,10 @@ export default function NotesScreen() {
         return (
           <View>
             <Text style={styles.title}>Nova Nota:</Text>
-            <TextInput placeholder="Número da Nota" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
-            <TextInput placeholder="Fornecedor" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
+            <TextInput placeholder="Descrição" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
             <TextInput placeholder="Valor" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
             <TextInput placeholder="Data de Vencimento" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
-            <TouchableOpacity style={styles.primaryButton} onPress={handleSave}>
+            <TouchableOpacity style={styles.primaryButton} onPress={handleSaveNote}>
               <Text style={styles.buttonText}>Salvar Nota</Text>
             </TouchableOpacity>
           </View>
@@ -67,8 +64,8 @@ export default function NotesScreen() {
         return (
           <View>
             <Text style={styles.title}>Excluir Nota:</Text>
-            <TextInput placeholder="Buscar por número..." style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
-            <TouchableOpacity style={[styles.primaryButton, styles.deleteButton]} onPress={handleDelete}>
+            <TextInput placeholder="Buscar nota para excluir..." style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
+            <TouchableOpacity style={[styles.primaryButton, styles.deleteButton]} onPress={handleDeleteNote}>
               <Text style={styles.buttonText}>Excluir Nota</Text>
             </TouchableOpacity>
           </View>
@@ -81,13 +78,13 @@ export default function NotesScreen() {
   return (
     <View>
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('todas')}>
+        <TouchableOpacity style={styles.button} onPress={() => handleSubMenuChange('todas')}>
           <Text style={styles.buttonText}>Listar Notas</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('nova')}>
+        <TouchableOpacity style={styles.button} onPress={() => handleSubMenuChange('nova')}>
           <Text style={styles.buttonText}>Nova Nota</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('excluir')}>
+        <TouchableOpacity style={styles.button} onPress={() => handleSubMenuChange('excluir')}>
           <Text style={styles.buttonText}>Excluir Nota</Text>
         </TouchableOpacity>
       </View>

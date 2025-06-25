@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useThemeStore } from '../store/useThemeStore';
 
 export default function GraphsScreen() {
@@ -9,27 +9,37 @@ export default function GraphsScreen() {
 
   const [selectedGraph, setSelectedGraph] = useState<'vendas' | 'clientes' | 'financeiro'>('vendas');
 
+  const handleExportPDF = () => {
+    Alert.alert('Exportação', 'PDF com os gráficos exportado com sucesso!');
+  };
+
   const renderGraphContent = () => {
     switch (selectedGraph) {
       case 'vendas':
         return (
           <View>
-            <Text style={styles.title}>📈 Gráfico de Vendas</Text>
-            <Text style={styles.description}>Exemplo: Gráfico de vendas dos últimos 30 dias.</Text>
+            <Text style={styles.title}>Total de Vendas no Mês:</Text>
+            <Text style={styles.graphMock}>[ Gráfico de Barras Exemplo ]</Text>
+
+            <Text style={styles.title}>Produtos Mais Vendidos:</Text>
+            <Text style={styles.graphMock}>[ Gráfico de Pizza Exemplo ]</Text>
+
+            <Text style={styles.title}>Total de Faturamento:</Text>
+            <Text style={styles.graphMock}>R$ 12.500,00</Text>
           </View>
         );
       case 'clientes':
         return (
           <View>
-            <Text style={styles.title}>👥 Gráfico de Clientes</Text>
-            <Text style={styles.description}>Exemplo: Crescimento de clientes ao longo dos meses.</Text>
+            <Text style={styles.title}>Crescimento de Clientes:</Text>
+            <Text style={styles.graphMock}>[ Gráfico de Linha Exemplo ]</Text>
           </View>
         );
       case 'financeiro':
         return (
           <View>
-            <Text style={styles.title}>💰 Gráfico Financeiro</Text>
-            <Text style={styles.description}>Exemplo: Faturamento x Despesas.</Text>
+            <Text style={styles.title}>Faturamento x Despesas:</Text>
+            <Text style={styles.graphMock}>[ Gráfico de Área Exemplo ]</Text>
           </View>
         );
       default:
@@ -39,6 +49,7 @@ export default function GraphsScreen() {
 
   return (
     <View>
+      {/* Botões de Filtro */}
       <View style={styles.buttonRow}>
         <TouchableOpacity
           style={[styles.button, selectedGraph === 'vendas' && styles.buttonSelected]}
@@ -62,7 +73,13 @@ export default function GraphsScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Conteúdo do Gráfico */}
       {renderGraphContent()}
+
+      {/* Botão Exportar PDF */}
+      <TouchableOpacity style={styles.exportButton} onPress={handleExportPDF}>
+        <Text style={styles.exportButtonText}>Exportar PDF</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -92,12 +109,31 @@ const getStyles = (isDark: boolean) =>
     title: {
       fontSize: 18,
       fontWeight: 'bold',
-      marginBottom: 8,
+      marginTop: 10,
+      marginBottom: 4,
       color: isDark ? '#fff' : '#000',
     },
 
-    description: {
+    graphMock: {
       fontSize: 16,
-      color: isDark ? '#ccc' : '#555',
+      backgroundColor: isDark ? '#333' : '#EEE',
+      textAlign: 'center',
+      paddingVertical: 12,
+      marginBottom: 10,
+      borderRadius: 6,
+      color: isDark ? '#fff' : '#000',
+    },
+
+    exportButton: {
+      marginTop: 20,
+      backgroundColor: '#0D47A1',
+      paddingVertical: 10,
+      borderRadius: 6,
+      alignItems: 'center',
+    },
+
+    exportButtonText: {
+      color: '#fff',
+      fontWeight: 'bold',
     },
   });

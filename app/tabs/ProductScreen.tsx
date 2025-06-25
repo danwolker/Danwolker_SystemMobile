@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useThemeStore } from '../store/useThemeStore';
 
 export default function ProductScreen() {
@@ -7,44 +7,43 @@ export default function ProductScreen() {
   const isDark = theme === 'dark';
   const styles = getStyles(isDark);
 
-  const [selectedSubMenu, setSelectedSubMenu] = useState<'listar' | 'editar' | 'novo'>('listar');
+  const [selectedSubMenu, setSelectedSubMenu] = useState<'listar' | 'editar' | 'adicionar'>('listar');
+  const [loading, setLoading] = useState(false);
 
-  const mockProdutos = [
-    {
-      nome: 'Produto A',
-      fabricante: 'Empresa X',
-      validade: '2026-01-10',
-      custo: 'R$ 10,00',
-      venda: 'R$ 20,00',
-      quantidade: 100,
-      codBarras: '7890001234567',
-    },
-    {
-      nome: 'Produto B',
-      fabricante: 'Empresa Y',
-      validade: '2025-12-05',
-      custo: 'R$ 15,00',
-      venda: 'R$ 30,00',
-      quantidade: 50,
-      codBarras: '7890007654321',
-    },
+  const mockProducts = [
+    { id: 1, nome: 'Produto A', fabricante: 'Fornecedor X', validade: '2025-12-31', custo: 'R$ 10,00', venda: 'R$ 15,00', quantidade: 30, codigo: '123456789' },
+    { id: 2, nome: 'Produto B', fabricante: 'Fornecedor Y', validade: '2026-03-20', custo: 'R$ 20,00', venda: 'R$ 30,00', quantidade: 50, codigo: '987654321' },
   ];
 
+  const handleSubMenuChange = (menu: typeof selectedSubMenu) => {
+    setLoading(true);
+    setTimeout(() => {
+      setSelectedSubMenu(menu);
+      setLoading(false);
+    }, 1000);
+  };
+
+  const handleSave = () => {
+    Alert.alert('Sucesso', 'Produto adicionado com sucesso!');
+  };
+
   const renderContent = () => {
+    if (loading) return <ActivityIndicator size="large" color={isDark ? '#fff' : '#000'} />;
+
     switch (selectedSubMenu) {
       case 'listar':
         return (
           <View>
             <Text style={styles.title}>Lista de Produtos:</Text>
-            {mockProdutos.map((produto, index) => (
-              <View key={index} style={styles.card}>
-                <Text style={styles.cardText}>Nome: {produto.nome}</Text>
-                <Text style={styles.cardText}>Fabricante: {produto.fabricante}</Text>
-                <Text style={styles.cardText}>Validade: {produto.validade}</Text>
-                <Text style={styles.cardText}>Preço de Custo: {produto.custo}</Text>
-                <Text style={styles.cardText}>Preço de Venda: {produto.venda}</Text>
-                <Text style={styles.cardText}>Quantidade: {produto.quantidade}</Text>
-                <Text style={styles.cardText}>Código de Barras: {produto.codBarras}</Text>
+            {mockProducts.map((prod) => (
+              <View key={prod.id} style={styles.card}>
+                <Text style={styles.cardText}>Nome: {prod.nome}</Text>
+                <Text style={styles.cardText}>Fabricante: {prod.fabricante}</Text>
+                <Text style={styles.cardText}>Validade: {prod.validade}</Text>
+                <Text style={styles.cardText}>Custo: {prod.custo}</Text>
+                <Text style={styles.cardText}>Venda: {prod.venda}</Text>
+                <Text style={styles.cardText}>Quantidade: {prod.quantidade}</Text>
+                <Text style={styles.cardText}>Código de Barras: {prod.codigo}</Text>
               </View>
             ))}
           </View>
@@ -53,21 +52,21 @@ export default function ProductScreen() {
         return (
           <View>
             <Text style={styles.title}>Editar Produto:</Text>
-            <TextInput placeholder="Digite nome ou código" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
+            <TextInput placeholder="Buscar produto..." style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
           </View>
         );
-      case 'novo':
+      case 'adicionar':
         return (
           <View>
             <Text style={styles.title}>Novo Produto:</Text>
-            <TextInput placeholder="Nome do Produto" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
-            <TextInput placeholder="Fabricante" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
-            <TextInput placeholder="Data de Validade" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
-            <TextInput placeholder="Preço de Custo" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
-            <TextInput placeholder="Preço de Venda" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
-            <TextInput placeholder="Quantidade" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
-            <TextInput placeholder="Código de Barras" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
-            <TouchableOpacity style={styles.primaryButton}>
+            <TextInput placeholder="Nome" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
+            <TextInput placeholder="Fabricante" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
+            <TextInput placeholder="Validade" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
+            <TextInput placeholder="Preço de Custo" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
+            <TextInput placeholder="Preço de Venda" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
+            <TextInput placeholder="Quantidade" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
+            <TextInput placeholder="Código de Barras" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
+            <TouchableOpacity style={styles.primaryButton} onPress={handleSave}>
               <Text style={styles.buttonText}>Salvar Produto</Text>
             </TouchableOpacity>
           </View>
@@ -80,17 +79,16 @@ export default function ProductScreen() {
   return (
     <View>
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('listar')}>
+        <TouchableOpacity style={styles.button} onPress={() => handleSubMenuChange('listar')}>
           <Text style={styles.buttonText}>Listar Produtos</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('editar')}>
+        <TouchableOpacity style={styles.button} onPress={() => handleSubMenuChange('editar')}>
           <Text style={styles.buttonText}>Editar Produto</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('novo')}>
-          <Text style={styles.buttonText}>Novo Produto</Text>
+        <TouchableOpacity style={styles.button} onPress={() => handleSubMenuChange('adicionar')}>
+          <Text style={styles.buttonText}>Adicionar Produto</Text>
         </TouchableOpacity>
       </View>
-
       {renderContent()}
     </View>
   );
@@ -99,11 +97,12 @@ export default function ProductScreen() {
 const getStyles = (isDark: boolean) => StyleSheet.create({
   buttonRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 10 },
   button: {
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     backgroundColor: isDark ? '#444' : '#BBDEFB',
+    borderRadius: 6,
     marginRight: 8,
     marginBottom: 8,
-    borderRadius: 6,
   },
   title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: isDark ? '#fff' : '#000' },
   input: {
@@ -113,7 +112,15 @@ const getStyles = (isDark: boolean) => StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10,
     color: isDark ? '#fff' : '#000',
+    backgroundColor: isDark ? '#222' : '#fff',
   },
+  card: {
+    backgroundColor: isDark ? '#333' : '#fff',
+    padding: 10,
+    marginBottom: 8,
+    borderRadius: 6,
+  },
+  cardText: { color: isDark ? '#ddd' : '#333', marginBottom: 2 },
   primaryButton: {
     backgroundColor: '#0D47A1',
     paddingVertical: 10,
@@ -122,12 +129,4 @@ const getStyles = (isDark: boolean) => StyleSheet.create({
     marginTop: 10,
   },
   buttonText: { color: isDark ? '#fff' : '#000', fontWeight: 'bold' },
-  card: {
-    backgroundColor: isDark ? '#333' : '#fff',
-    padding: 10,
-    marginBottom: 8,
-    borderRadius: 6,
-    elevation: 1,
-  },
-  cardText: { color: isDark ? '#ddd' : '#333', marginBottom: 2 },
 });
