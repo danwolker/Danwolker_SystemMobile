@@ -21,10 +21,17 @@ export default function NotesScreen() {
   const [selectedSubMenu, setSelectedSubMenu] = useState<'todas' | 'nova'>('todas');
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState<any[]>([]);
+  const [parcelas, setParcelas] = useState<string[]>(['']);
   const [formData, setFormData] = useState({
-    descricao: '',
-    valor: '',
-    vencimento: '',
+    chave_acesso: '',
+    numero_nfe: '',
+    serie: '',
+    data_emissao: '',
+    cnpj_emitente: '',
+    nome_emitente: '',
+    valor_total: '',
+    qtd_itens: '',
+    xml: '',
   });
   const [search, setSearch] = useState('');
 
@@ -44,20 +51,52 @@ export default function NotesScreen() {
   }, [selectedSubMenu]);
 
   const handleAddNote = async () => {
-    if (!formData.descricao || !formData.valor || !formData.vencimento) {
-      Alert.alert('Erro', 'Preencha todos os campos.');
+    for (const [key, value] of Object.entries(formData)) {
+      if (!value) {
+        Alert.alert('Erro', `Preencha o campo: ${key}`);
+        return;
+      }
+    }
+
+    if (parcelas.some((p) => !p.trim())) {
+      Alert.alert('Erro', 'Preencha todas as datas das parcelas ou remova as em branco.');
       return;
     }
+
     setLoading(true);
     try {
-      await axios.post(`${API_HOST}/notes/add_note.php`, formData);
+      await axios.post(`${API_HOST}/notes/add_note.php`, {
+        ...formData,
+        parcelas: parcelas,
+      });
       Alert.alert('Sucesso', 'Nota fiscal adicionada.');
-      setFormData({ descricao: '', valor: '', vencimento: '' });
+      setFormData({
+        chave_acesso: '',
+        numero_nfe: '',
+        serie: '',
+        data_emissao: '',
+        cnpj_emitente: '',
+        nome_emitente: '',
+        valor_total: '',
+        qtd_itens: '',
+        xml: '',
+      });
+      setParcelas(['']);
       setSelectedSubMenu('todas');
     } catch (error) {
       Alert.alert('Erro', 'Falha ao adicionar nota.');
     }
     setLoading(false);
+  };
+
+  const addParcela = () => setParcelas([...parcelas, '']);
+
+  const removeParcela = () => {
+    if (parcelas.length > 1) {
+      setParcelas(parcelas.slice(0, -1));
+    } else {
+      Alert.alert('Aviso', 'Você precisa ter ao menos uma parcela.');
+    }
   };
 
   const handleDeleteNote = async (id: number) => {
@@ -73,14 +112,10 @@ export default function NotesScreen() {
   };
 
   const confirmDelete = (id: number) => {
-    Alert.alert(
-      'Confirmação',
-      'Tem certeza que deseja excluir esta nota?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Excluir', onPress: () => handleDeleteNote(id), style: 'destructive' },
-      ]
-    );
+    Alert.alert('Confirmação', 'Tem certeza que deseja excluir esta nota?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Excluir', onPress: () => handleDeleteNote(id), style: 'destructive' },
+    ]);
   };
 
   const handleDetails = (nota: any) => {
@@ -92,11 +127,7 @@ Série: ${nota.serie}
 Data de Emissão: ${nota.data_emissao}
 CNPJ Emitente: ${nota.cnpj_emitente}
 Nome Emitente: ${nota.nome_emitente}
-Valor Total: R$ ${nota.valor_total}
-Qtd Itens: ${nota.qtd_itens}
-XML: ${nota.xml}
-Status: ${nota.status}
-Data de Importação: ${nota.data_importacao}`
+Valor Total: R$ ${nota.valor_total}`
     );
   };
 
@@ -109,9 +140,8 @@ Data de Importação: ${nota.data_importacao}`
 
     if (selectedSubMenu === 'todas') {
       return (
-        <ScrollView>
+        <ScrollView style={{ padding: 10 }}>
           <Text style={styles.title}>Notas Fiscais:</Text>
-
           <TextInput
             placeholder="Buscar por nome do emitente..."
             placeholderTextColor={isDark ? '#aaa' : '#666'}
@@ -119,7 +149,6 @@ Data de Importação: ${nota.data_importacao}`
             onChangeText={setSearch}
             style={styles.input}
           />
-
           {filteredNotes.map((nota) => (
             <View key={nota.id} style={styles.card}>
               <Text style={styles.cardText}>Nome: {nota.nome_emitente}</Text>
@@ -130,7 +159,6 @@ Data de Importação: ${nota.data_importacao}`
                 <TouchableOpacity style={styles.detailsButton} onPress={() => handleDetails(nota)}>
                   <Text style={styles.buttonText}>Detalhes</Text>
                 </TouchableOpacity>
-
                 <TouchableOpacity style={styles.deleteButton} onPress={() => confirmDelete(nota.id)}>
                   <Text style={styles.buttonText}>Excluir</Text>
                 </TouchableOpacity>
@@ -143,42 +171,59 @@ Data de Importação: ${nota.data_importacao}`
 
     if (selectedSubMenu === 'nova') {
       return (
-        <View>
+        <ScrollView style={{ padding: 10 }}>
           <Text style={styles.title}>Nova Nota:</Text>
 
-          {/* Botão para futura leitura de QR Code */}
-          <TouchableOpacity
-            style={styles.qrButton}
-            onPress={() => Alert.alert('Em desenvolvimento', 'Leitura por QR Code em breve.')}
-          >
-            <Text style={styles.qrButtonText}>Ler Nota via QR Code</Text>
-          </TouchableOpacity>
+          {Object.keys(formData).map((field) => (
+            <TextInput
+              key={field}
+              placeholder={field.replace(/_/g, ' ').toUpperCase()}
+              placeholderTextColor={isDark ? '#aaa' : '#666'}
+              value={formData[field as keyof typeof formData]}
+              onChangeText={(text) => setFormData({ ...formData, [field]: text })}
+              style={styles.input}
+            />
+          ))}
 
-          <TextInput
-            placeholder="Descrição"
-            placeholderTextColor={isDark ? '#aaa' : '#666'}
-            value={formData.descricao}
-            onChangeText={(text) => setFormData({ ...formData, descricao: text })}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Valor"
-            placeholderTextColor={isDark ? '#aaa' : '#666'}
-            value={formData.valor}
-            onChangeText={(text) => setFormData({ ...formData, valor: text })}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Data de Vencimento"
-            placeholderTextColor={isDark ? '#aaa' : '#666'}
-            value={formData.vencimento}
-            onChangeText={(text) => setFormData({ ...formData, vencimento: text })}
-            style={styles.input}
-          />
-          <TouchableOpacity style={styles.primaryButton} onPress={handleAddNote}>
+          <Text style={[styles.title, { marginTop: 20 }]}>Parcelas:</Text>
+          {parcelas.map((parcela, index) => (
+            <TextInput
+              key={index}
+              placeholder={`Data da Parcela ${index + 1} (YYYY-MM-DD)`}
+              placeholderTextColor={isDark ? '#aaa' : '#666'}
+              value={parcela}
+              onChangeText={(text) => {
+                const novas = [...parcelas];
+                novas[index] = text;
+                setParcelas(novas);
+              }}
+              style={styles.input}
+            />
+          ))}
+
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 10 }}>
+            <TouchableOpacity
+              onPress={addParcela}
+              style={[styles.primaryButton, { flex: 1, marginRight: 8 }]}
+            >
+              <Text style={styles.buttonText}>Adicionar Parcela</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={removeParcela}
+              style={[styles.deleteButton, { flex: 1, marginLeft: 8 }]}
+            >
+              <Text style={styles.buttonText}>Remover Parcela</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={[styles.primaryButton, { marginTop: 20, marginBottom: 30 }]}
+            onPress={handleAddNote}
+          >
             <Text style={styles.buttonText}>Salvar Nota</Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
       );
     }
 
@@ -187,7 +232,6 @@ Data de Importação: ${nota.data_importacao}`
 
   return (
     <View>
-      {/* TOPO - Botões Listar/Nova lado a lado */}
       <View style={styles.topButtonRow}>
         <TouchableOpacity style={styles.listButton} onPress={() => setSelectedSubMenu('todas')}>
           <Text style={styles.buttonText}>Listar Notas</Text>
@@ -228,8 +272,8 @@ const getStyles = (isDark: boolean) =>
     input: {
       borderWidth: 1,
       borderColor: isDark ? '#555' : '#ccc',
-      padding: 8,
-      borderRadius: 5,
+      padding: 10,
+      borderRadius: 6,
       marginBottom: 10,
       color: isDark ? '#fff' : '#000',
       backgroundColor: isDark ? '#222' : '#fff',
@@ -243,19 +287,16 @@ const getStyles = (isDark: boolean) =>
     cardText: { color: isDark ? '#ddd' : '#333', marginBottom: 2 },
     primaryButton: {
       backgroundColor: '#0D47A1',
-      paddingVertical: 10,
+      paddingVertical: 12,
       borderRadius: 6,
       alignItems: 'center',
       marginTop: 10,
     },
     deleteButton: {
-      flex: 1,
       backgroundColor: '#D32F2F',
-      paddingVertical: 10,
-      borderTopRightRadius: 6,
-      borderBottomRightRadius: 6,
+      paddingVertical: 12,
+      borderRadius: 6,
       alignItems: 'center',
-      marginLeft: 4,
     },
     detailsButton: {
       flex: 1,
@@ -266,13 +307,5 @@ const getStyles = (isDark: boolean) =>
       alignItems: 'center',
       marginRight: 4,
     },
-    qrButton: {
-      backgroundColor: '#1976D2',
-      paddingVertical: 10,
-      borderRadius: 6,
-      alignItems: 'center',
-      marginBottom: 10,
-    },
-    qrButtonText: { color: '#fff', fontWeight: 'bold' },
-    buttonText: { color: isDark ? '#fff' : '#000', fontWeight: 'bold' },
+    buttonText: { color: isDark ? '#fff' : '#000', fontWeight: 'bold', textAlign: 'center' },
   });
