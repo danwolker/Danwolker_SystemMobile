@@ -13,9 +13,14 @@ import {
 } from 'react-native';
 import { useAuthStore } from './store/useAuthStore';
 import { useThemeStore } from './store/useThemeStore';
-import ProductScreen from './tabs/ProductScreen'; // Importando tela de Produtos
+import BudgetsScreen from './tabs/BudgetsScreen';
+import DashboardScreen from './tabs/DashboardScreen';
+import GraphsScreen from './tabs/GraphsScreen';
+import NotesScreen from './tabs/NotesScreen';
+import OrdersScreen from './tabs/OrdersScreen';
+import ProductScreen from './tabs/ProductScreen';
 
-export default function DashboardScreen() {
+export default function SuccessScreen() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
@@ -36,9 +41,28 @@ export default function DashboardScreen() {
 
   const styles = getStyles(isDark);
 
+  const renderSelectedTab = () => {
+    switch (selectedMenu) {
+      case 'Dashboard':
+        return <DashboardScreen />;
+      case 'Produtos':
+        return <ProductScreen />;
+      case 'Notas':
+        return <NotesScreen />;
+      case 'Orçamentos':
+        return <BudgetsScreen />;
+      case 'Pedidos':
+        return <OrdersScreen />;
+      case 'Gráficos':
+        return <GraphsScreen />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* Botão Tema */}
+      {/* Botão de Tema */}
       <TouchableOpacity style={styles.themeToggleButton} onPress={toggleTheme}>
         <Ionicons
           name={isDark ? 'moon-outline' : 'sunny-outline'}
@@ -47,6 +71,7 @@ export default function DashboardScreen() {
         />
       </TouchableOpacity>
 
+      {/* StatusBar Android */}
       <View style={styles.statusBarSpacer} />
 
       {/* Header */}
@@ -70,7 +95,7 @@ export default function DashboardScreen() {
         </View>
       </View>
 
-      {/* Menu Grid */}
+      {/* Menu de Navegação */}
       <View style={styles.menuContainer}>
         {menuItems.map((item) => (
           <TouchableOpacity
@@ -93,21 +118,12 @@ export default function DashboardScreen() {
         ))}
       </View>
 
-      {/* Divider entre Menu e Conteúdo */}
+      {/* Linha Divisória */}
       <View style={styles.divider} />
 
-      {/* Conteúdo Condicional */}
+      {/* Conteúdo da Tab Selecionada */}
       <ScrollView style={styles.contentArea}>
-        {selectedMenu === 'Dashboard' && (
-          <>
-            <Text style={styles.contentTitle}>Dashboard</Text>
-            <Text style={styles.contentText}>Conteúdo inicial, gráficos, etc.</Text>
-          </>
-        )}
-
-        {selectedMenu === 'Produtos' && <ProductScreen />}
-
-        {/* Futuras telas */}
+        {renderSelectedTab()}
       </ScrollView>
     </View>
   );
@@ -196,7 +212,7 @@ const getStyles = (isDark: boolean) =>
 
     menuItem: {
       width: '30%',
-      height: 50,
+      height: 45,
       marginBottom: 10,
       borderRadius: 8,
       justifyContent: 'center',
@@ -219,27 +235,13 @@ const getStyles = (isDark: boolean) =>
     },
 
     divider: {
-      height: 1,
-      backgroundColor: isDark ? '#444' : '#ccc',
-      marginHorizontal: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: isDark ? '#444' : '#ccc',
       marginBottom: 8,
     },
 
     contentArea: {
       flex: 1,
       padding: 18,
-    },
-
-    contentTitle: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginBottom: 12,
-      color: isDark ? '#fff' : '#000',
-    },
-
-    contentText: {
-      fontSize: 16,
-      lineHeight: 24,
-      color: isDark ? '#ddd' : '#555',
     },
   });
