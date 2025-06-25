@@ -18,7 +18,7 @@ export default function NotesScreen() {
   const styles = getStyles(isDark);
 
   const API_HOST = process.env.EXPO_PUBLIC_API_HOST;
-  const [selectedSubMenu, setSelectedSubMenu] = useState<'todas' | 'nova' | 'excluir'>('todas');
+  const [selectedSubMenu, setSelectedSubMenu] = useState<'todas' | 'nova'>('todas');
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState<any[]>([]);
   const [formData, setFormData] = useState({
@@ -32,14 +32,9 @@ export default function NotesScreen() {
     setLoading(true);
     try {
       const response = await axios.get(`${API_HOST}/notes/get_notes.php`);
-      if (response.data.notes && Array.isArray(response.data.notes)) {
-        setNotes(response.data.notes);
-      } else {
-        setNotes([]);
-      }
+      setNotes(response.data.notes);
     } catch (error) {
-      setNotes([]);
-      Alert.alert('Erro', 'Não foi possível carregar as notas.');
+      Alert.alert('Erro', 'Falha ao carregar notas fiscais.');
     }
     setLoading(false);
   };
@@ -48,104 +43,98 @@ export default function NotesScreen() {
     if (selectedSubMenu === 'todas') fetchNotes();
   }, [selectedSubMenu]);
 
-  const handleSaveNote = async () => {
+  const handleAddNote = async () => {
     if (!formData.descricao || !formData.valor || !formData.vencimento) {
-      Alert.alert('Atenção', 'Preencha todos os campos.');
+      Alert.alert('Erro', 'Preencha todos os campos.');
       return;
     }
-
     setLoading(true);
     try {
       await axios.post(`${API_HOST}/notes/add_note.php`, formData);
-      Alert.alert('Sucesso', 'Nota adicionada com sucesso!');
+      Alert.alert('Sucesso', 'Nota fiscal adicionada.');
       setFormData({ descricao: '', valor: '', vencimento: '' });
       setSelectedSubMenu('todas');
     } catch (error) {
-      Alert.alert('Erro', 'Falha ao adicionar a nota.');
+      Alert.alert('Erro', 'Falha ao adicionar nota.');
     }
     setLoading(false);
   };
 
   const handleDeleteNote = async (id: number) => {
+    setLoading(true);
+    try {
+      await axios.post(`${API_HOST}/notes/delete_note.php`, { id });
+      Alert.alert('Sucesso', 'Nota excluída.');
+      fetchNotes();
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao excluir nota.');
+    }
+    setLoading(false);
+  };
+
+  const confirmDelete = (id: number) => {
     Alert.alert(
-      'Confirmar Exclusão',
-      `Tem certeza que deseja excluir a nota ${id}?`,
+      'Confirmação',
+      'Tem certeza que deseja excluir esta nota?',
       [
         { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Excluir',
-          style: 'destructive',
-          onPress: async () => {
-            setLoading(true);
-            try {
-              await axios.post(`${API_HOST}/notes/delete_note.php`, { id });
-              Alert.alert('Excluído', 'Nota excluída com sucesso!');
-              fetchNotes();
-            } catch (error) {
-              Alert.alert('Erro', 'Não foi possível excluir a nota.');
-            }
-            setLoading(false);
-          },
-        },
+        { text: 'Excluir', onPress: () => handleDeleteNote(id), style: 'destructive' },
       ]
     );
   };
 
-  const renderFormFields = () => (
-    <>
-      <TextInput
-        placeholder="Descrição"
-        style={styles.input}
-        placeholderTextColor={isDark ? '#aaa' : '#666'}
-        value={formData.descricao}
-        onChangeText={(text) => setFormData({ ...formData, descricao: text })}
-      />
-      <TextInput
-        placeholder="Valor"
-        style={styles.input}
-        placeholderTextColor={isDark ? '#aaa' : '#666'}
-        value={formData.valor}
-        onChangeText={(text) => setFormData({ ...formData, valor: text })}
-      />
-      <TextInput
-        placeholder="Data de Vencimento"
-        style={styles.input}
-        placeholderTextColor={isDark ? '#aaa' : '#666'}
-        value={formData.vencimento}
-        onChangeText={(text) => setFormData({ ...formData, vencimento: text })}
-      />
-    </>
+  const handleDetails = (nota: any) => {
+    Alert.alert(
+      'Detalhes da Nota',
+      `Chave de Acesso: ${nota.chave_acesso}
+Número NFE: ${nota.numero_nfe}
+Série: ${nota.serie}
+Data de Emissão: ${nota.data_emissao}
+CNPJ Emitente: ${nota.cnpj_emitente}
+Nome Emitente: ${nota.nome_emitente}
+Valor Total: R$ ${nota.valor_total}
+Qtd Itens: ${nota.qtd_itens}
+XML: ${nota.xml}
+Status: ${nota.status}
+Data de Importação: ${nota.data_importacao}`
+    );
+  };
+
+  const filteredNotes = notes.filter((nota) =>
+    nota.nome_emitente.toLowerCase().includes(search.toLowerCase())
   );
 
   const renderContent = () => {
     if (loading) return <ActivityIndicator size="large" color={isDark ? '#fff' : '#000'} />;
 
     if (selectedSubMenu === 'todas') {
-      const filteredNotes = notes.filter((nota) =>
-        nota.descricao.toLowerCase().includes(search.toLowerCase())
-      );
-
       return (
         <ScrollView>
+          <Text style={styles.title}>Notas Fiscais:</Text>
+
           <TextInput
-            placeholder="Buscar por descrição..."
+            placeholder="Buscar por nome do emitente..."
+            placeholderTextColor={isDark ? '#aaa' : '#666'}
             value={search}
             onChangeText={setSearch}
             style={styles.input}
-            placeholderTextColor={isDark ? '#aaa' : '#666'}
           />
-          {Array.isArray(filteredNotes) && filteredNotes.map((nota) => (
+
+          {filteredNotes.map((nota) => (
             <View key={nota.id} style={styles.card}>
-              <Text style={styles.cardText}>ID: {nota.id}</Text>
-              <Text style={styles.cardText}>Descrição: {nota.descricao}</Text>
-              <Text style={styles.cardText}>Valor: R$ {nota.valor}</Text>
-              <Text style={styles.cardText}>Vencimento: {nota.vencimento}</Text>
-              <TouchableOpacity
-                style={[styles.primaryButton, styles.deleteButton]}
-                onPress={() => handleDeleteNote(nota.id)}
-              >
-                <Text style={styles.buttonText}>Excluir</Text>
-              </TouchableOpacity>
+              <Text style={styles.cardText}>Nome: {nota.nome_emitente}</Text>
+              <Text style={styles.cardText}>Valor: R$ {nota.valor_total}</Text>
+              <Text style={styles.cardText}>Vencimento: {nota.data_emissao}</Text>
+
+              <View style={styles.cardButtonRow}>
+                <TouchableOpacity style={styles.detailsButton} onPress={() => handleDetails(nota)}>
+                  <Text style={styles.buttonText}>Detalhes</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.deleteButton} onPress={() => confirmDelete(nota.id)}>
+                  <Text style={styles.buttonText}>Excluir</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           ))}
         </ScrollView>
@@ -156,8 +145,37 @@ export default function NotesScreen() {
       return (
         <View>
           <Text style={styles.title}>Nova Nota:</Text>
-          {renderFormFields()}
-          <TouchableOpacity style={styles.primaryButton} onPress={handleSaveNote}>
+
+          {/* Botão para futura leitura de QR Code */}
+          <TouchableOpacity
+            style={styles.qrButton}
+            onPress={() => Alert.alert('Em desenvolvimento', 'Leitura por QR Code em breve.')}
+          >
+            <Text style={styles.qrButtonText}>Ler Nota via QR Code</Text>
+          </TouchableOpacity>
+
+          <TextInput
+            placeholder="Descrição"
+            placeholderTextColor={isDark ? '#aaa' : '#666'}
+            value={formData.descricao}
+            onChangeText={(text) => setFormData({ ...formData, descricao: text })}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Valor"
+            placeholderTextColor={isDark ? '#aaa' : '#666'}
+            value={formData.valor}
+            onChangeText={(text) => setFormData({ ...formData, valor: text })}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Data de Vencimento"
+            placeholderTextColor={isDark ? '#aaa' : '#666'}
+            value={formData.vencimento}
+            onChangeText={(text) => setFormData({ ...formData, vencimento: text })}
+            style={styles.input}
+          />
+          <TouchableOpacity style={styles.primaryButton} onPress={handleAddNote}>
             <Text style={styles.buttonText}>Salvar Nota</Text>
           </TouchableOpacity>
         </View>
@@ -169,14 +187,16 @@ export default function NotesScreen() {
 
   return (
     <View>
-      <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('todas')}>
+      {/* TOPO - Botões Listar/Nova lado a lado */}
+      <View style={styles.topButtonRow}>
+        <TouchableOpacity style={styles.listButton} onPress={() => setSelectedSubMenu('todas')}>
           <Text style={styles.buttonText}>Listar Notas</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('nova')}>
+        <TouchableOpacity style={styles.newButton} onPress={() => setSelectedSubMenu('nova')}>
           <Text style={styles.buttonText}>Nova Nota</Text>
         </TouchableOpacity>
       </View>
+
       {renderContent()}
     </View>
   );
@@ -184,15 +204,26 @@ export default function NotesScreen() {
 
 const getStyles = (isDark: boolean) =>
   StyleSheet.create({
-    buttonRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 10 },
-    button: {
+    topButtonRow: { flexDirection: 'row', marginBottom: 10 },
+    listButton: {
+      flex: 1,
       paddingVertical: 10,
-      paddingHorizontal: 12,
       backgroundColor: isDark ? '#444' : '#BBDEFB',
-      borderRadius: 6,
-      marginRight: 8,
-      marginBottom: 8,
+      borderTopLeftRadius: 6,
+      borderBottomLeftRadius: 6,
+      alignItems: 'center',
+      marginRight: 4,
     },
+    newButton: {
+      flex: 1,
+      paddingVertical: 10,
+      backgroundColor: isDark ? '#444' : '#BBDEFB',
+      borderTopRightRadius: 6,
+      borderBottomRightRadius: 6,
+      alignItems: 'center',
+      marginLeft: 4,
+    },
+    cardButtonRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
     title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: isDark ? '#fff' : '#000' },
     input: {
       borderWidth: 1,
@@ -218,8 +249,30 @@ const getStyles = (isDark: boolean) =>
       marginTop: 10,
     },
     deleteButton: {
+      flex: 1,
       backgroundColor: '#D32F2F',
-      marginTop: 10,
+      paddingVertical: 10,
+      borderTopRightRadius: 6,
+      borderBottomRightRadius: 6,
+      alignItems: 'center',
+      marginLeft: 4,
     },
-    buttonText: { color: '#fff', fontWeight: 'bold' },
+    detailsButton: {
+      flex: 1,
+      backgroundColor: '#1976D2',
+      paddingVertical: 10,
+      borderTopLeftRadius: 6,
+      borderBottomLeftRadius: 6,
+      alignItems: 'center',
+      marginRight: 4,
+    },
+    qrButton: {
+      backgroundColor: '#1976D2',
+      paddingVertical: 10,
+      borderRadius: 6,
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    qrButtonText: { color: '#fff', fontWeight: 'bold' },
+    buttonText: { color: isDark ? '#fff' : '#000', fontWeight: 'bold' },
   });

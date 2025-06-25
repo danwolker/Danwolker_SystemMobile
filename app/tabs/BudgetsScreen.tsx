@@ -62,11 +62,11 @@ export default function BudgetsScreen() {
 
   return (
     <View>
-      <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('listar')}>
+      <View style={styles.topButtonRow}>
+        <TouchableOpacity style={styles.listButton} onPress={() => setSelectedSubMenu('listar')}>
           <Text style={styles.buttonText}>Listar Orçamentos</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('novo')}>
+        <TouchableOpacity style={styles.newButton} onPress={() => setSelectedSubMenu('novo')}>
           <Text style={styles.buttonText}>Novo Orçamento</Text>
         </TouchableOpacity>
       </View>
@@ -77,14 +77,24 @@ export default function BudgetsScreen() {
 }
 
 const getStyles = (isDark: boolean) => StyleSheet.create({
-  buttonRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 10 },
-  button: {
+  topButtonRow: { flexDirection: 'row', marginBottom: 10 },
+  listButton: {
+    flex: 1,
     paddingVertical: 10,
-    paddingHorizontal: 12,
     backgroundColor: isDark ? '#444' : '#BBDEFB',
-    borderRadius: 6,
-    marginRight: 8,
-    marginBottom: 8,
+    borderTopLeftRadius: 6,
+    borderBottomLeftRadius: 6,
+    alignItems: 'center',
+    marginRight: 4,
+  },
+  newButton: {
+    flex: 1,
+    paddingVertical: 10,
+    backgroundColor: isDark ? '#444' : '#BBDEFB',
+    borderTopRightRadius: 6,
+    borderBottomRightRadius: 6,
+    alignItems: 'center',
+    marginLeft: 4,
   },
   title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: isDark ? '#fff' : '#000' },
   input: {

@@ -103,16 +103,7 @@ export default function ProductScreen() {
   };
 
   const handleEdit = (product: any) => {
-    setFormData({
-      id: product.id,
-      nome: product.nome,
-      fabricante: product.fabricante,
-      validade: product.validade,
-      custo: product.custo,
-      venda: product.venda,
-      quantidade: product.quantidade,
-      codigo_barras: product.codigo_barras,
-    });
+    setFormData(product);
     setEditMode(true);
     setSelectedSubMenu('adicionar');
   };
@@ -123,21 +114,23 @@ export default function ProductScreen() {
 
   const renderFormFields = () => (
     <>
-      {/* Botão para futura leitura de nota fiscal */}
       <TouchableOpacity
         style={styles.scanButton}
-        onPress={() => Alert.alert('Em breve', 'Leitura de nota fiscal em desenvolvimento...')}
+        onPress={() => Alert.alert('Futuro recurso', 'Leitura de nota fiscal por QR Code em desenvolvimento')}
       >
-        <Text style={styles.scanButtonText}> Escanear Nota Fiscal (Em desenvolvimento)</Text>
+        <Text style={styles.scanButtonText}>Escanear Nota Fiscal</Text>
       </TouchableOpacity>
 
-      <TextInput placeholder="Nome" style={styles.input} value={formData.nome} onChangeText={(text) => setFormData({ ...formData, nome: text })} placeholderTextColor={isDark ? '#aaa' : '#666'} />
-      <TextInput placeholder="Fabricante" style={styles.input} value={formData.fabricante} onChangeText={(text) => setFormData({ ...formData, fabricante: text })} placeholderTextColor={isDark ? '#aaa' : '#666'} />
-      <TextInput placeholder="Validade" style={styles.input} value={formData.validade} onChangeText={(text) => setFormData({ ...formData, validade: text })} placeholderTextColor={isDark ? '#aaa' : '#666'} />
-      <TextInput placeholder="Custo" style={styles.input} value={formData.custo} onChangeText={(text) => setFormData({ ...formData, custo: text })} placeholderTextColor={isDark ? '#aaa' : '#666'} />
-      <TextInput placeholder="Venda" style={styles.input} value={formData.venda} onChangeText={(text) => setFormData({ ...formData, venda: text })} placeholderTextColor={isDark ? '#aaa' : '#666'} />
-      <TextInput placeholder="Quantidade" style={styles.input} value={formData.quantidade} onChangeText={(text) => setFormData({ ...formData, quantidade: text })} placeholderTextColor={isDark ? '#aaa' : '#666'} />
-      <TextInput placeholder="Código de Barras" style={styles.input} value={formData.codigo_barras} onChangeText={(text) => setFormData({ ...formData, codigo_barras: text })} placeholderTextColor={isDark ? '#aaa' : '#666'} />
+      {['nome', 'fabricante', 'validade', 'custo', 'venda', 'quantidade', 'codigo_barras'].map((field) => (
+        <TextInput
+          key={field}
+          placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+          style={styles.input}
+          placeholderTextColor={isDark ? '#aaa' : '#666'}
+          value={formData[field as keyof typeof formData]}
+          onChangeText={(text) => setFormData({ ...formData, [field]: text })}
+        />
+      ))}
     </>
   );
 
@@ -149,8 +142,8 @@ export default function ProductScreen() {
         <ScrollView>
           <TextInput
             placeholder="Buscar produto por nome..."
-            style={styles.input}
             placeholderTextColor={isDark ? '#aaa' : '#666'}
+            style={styles.input}
             value={search}
             onChangeText={setSearch}
           />
@@ -165,7 +158,7 @@ export default function ProductScreen() {
               <Text style={styles.cardText}>Quantidade: {prod.quantidade}</Text>
               <Text style={styles.cardText}>Código de Barras: {prod.codigo_barras}</Text>
 
-              <View style={styles.buttonRowInside}>
+              <View style={styles.cardButtonRow}>
                 <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(prod)}>
                   <Text style={styles.buttonText}>Editar</Text>
                 </TouchableOpacity>
@@ -195,14 +188,22 @@ export default function ProductScreen() {
 
   return (
     <View>
-      <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('listar')}>
+      {/* TOPO - Botões Listar/Novo lado a lado */}
+      <View style={styles.topButtonRow}>
+        <TouchableOpacity style={styles.listButton} onPress={() => setSelectedSubMenu('listar')}>
           <Text style={styles.buttonText}>Listar Produtos</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => { resetForm(); setSelectedSubMenu('adicionar'); }}>
+        <TouchableOpacity
+          style={styles.newButton}
+          onPress={() => {
+            resetForm();
+            setSelectedSubMenu('adicionar');
+          }}
+        >
           <Text style={styles.buttonText}>Novo Produto</Text>
         </TouchableOpacity>
       </View>
+
       {renderContent()}
     </View>
   );
@@ -210,16 +211,26 @@ export default function ProductScreen() {
 
 const getStyles = (isDark: boolean) =>
   StyleSheet.create({
-    buttonRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 10 },
-    buttonRowInside: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 8 },
-    button: {
+    topButtonRow: { flexDirection: 'row', marginBottom: 10 },
+    listButton: {
+      flex: 1,
       paddingVertical: 10,
-      paddingHorizontal: 12,
       backgroundColor: isDark ? '#444' : '#BBDEFB',
-      borderRadius: 6,
-      marginRight: 8,
-      marginBottom: 8,
+      borderTopLeftRadius: 6,
+      borderBottomLeftRadius: 6,
+      alignItems: 'center',
+      marginRight: 4,
     },
+    newButton: {
+      flex: 1,
+      paddingVertical: 10,
+      backgroundColor: isDark ? '#444' : '#BBDEFB',
+      borderTopRightRadius: 6,
+      borderBottomRightRadius: 6,
+      alignItems: 'center',
+      marginLeft: 4,
+    },
+    cardButtonRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
     title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: isDark ? '#fff' : '#000' },
     input: {
       borderWidth: 1,
@@ -245,24 +256,29 @@ const getStyles = (isDark: boolean) =>
       marginTop: 10,
     },
     editButton: {
+      flex: 1,
       backgroundColor: '#1976D2',
-      paddingVertical: 8,
-      paddingHorizontal: 10,
-      borderRadius: 6,
-      marginRight: 8,
+      paddingVertical: 10,
+      borderTopLeftRadius: 6,
+      borderBottomLeftRadius: 6,
+      alignItems: 'center',
+      marginRight: 4,
     },
     deleteButton: {
+      flex: 1,
       backgroundColor: '#D32F2F',
-      paddingVertical: 8,
-      paddingHorizontal: 10,
-      borderRadius: 6,
+      paddingVertical: 10,
+      borderTopRightRadius: 6,
+      borderBottomRightRadius: 6,
+      alignItems: 'center',
+      marginLeft: 4,
     },
-    buttonText: { color: '#fff', fontWeight: 'bold' },
+    buttonText: { color: isDark ? '#fff' : '#000', fontWeight: 'bold' },
     scanButton: {
       backgroundColor: '#1976D2',
       paddingVertical: 10,
-      paddingHorizontal: 12,
       borderRadius: 6,
+      alignItems: 'center',
       marginBottom: 10,
     },
     scanButtonText: {
