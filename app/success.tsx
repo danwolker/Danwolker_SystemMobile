@@ -1,9 +1,19 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, Platform, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useAuthStore } from './store/useAuthStore';
 import { useThemeStore } from './store/useThemeStore';
+import ProductScreen from './tabs/ProductScreen'; // Importando tela de Produtos
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -22,18 +32,21 @@ export default function DashboardScreen() {
     alert('Abrindo site do e-commerce...');
   };
 
-  const menuItems = ['Dashboard', 'Produtos', 'Notas', 'Orçamentos', 'Lista de Pedidos', 'Gráficos'];
+  const menuItems = ['Dashboard', 'Produtos', 'Notas', 'Orçamentos', 'Pedidos', 'Gráficos'];
 
   const styles = getStyles(isDark);
 
   return (
     <View style={styles.container}>
-      {/* Botão de troca de tema escondido no topo */}
-      <TouchableOpacity style={styles.hiddenToggleButton} onPress={toggleTheme}>
-        <Ionicons name="settings-outline" size={22} color={isDark ? '#fff' : '#333'} />
+      {/* Botão Tema */}
+      <TouchableOpacity style={styles.themeToggleButton} onPress={toggleTheme}>
+        <Ionicons
+          name={isDark ? 'moon-outline' : 'sunny-outline'}
+          size={22}
+          color={isDark ? '#fff' : '#333'}
+        />
       </TouchableOpacity>
 
-      {/* Espaço para StatusBar em Android */}
       <View style={styles.statusBarSpacer} />
 
       {/* Header */}
@@ -57,166 +70,176 @@ export default function DashboardScreen() {
         </View>
       </View>
 
-      {/* Conteúdo principal */}
-      <View style={styles.mainContent}>
-        {/* Menu lateral */}
-        <View style={styles.sideMenu}>
-          {menuItems.map((item) => (
-            <TouchableOpacity
-              key={item}
+      {/* Menu Grid */}
+      <View style={styles.menuContainer}>
+        {menuItems.map((item) => (
+          <TouchableOpacity
+            key={item}
+            style={[
+              styles.menuItem,
+              selectedMenu === item && styles.menuItemSelected,
+            ]}
+            onPress={() => setSelectedMenu(item)}
+          >
+            <Text
               style={[
-                styles.menuItem,
-                selectedMenu === item && styles.menuItemSelected
+                styles.menuItemText,
+                selectedMenu === item && styles.menuItemTextSelected,
               ]}
-              onPress={() => setSelectedMenu(item)}
             >
-              <Text
-                style={[
-                  styles.menuItemText,
-                  selectedMenu === item && styles.menuItemTextSelected
-                ]}
-              >
-                {item}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Área de conteúdo */}
-        <ScrollView style={styles.contentArea}>
-          <Text style={styles.contentTitle}>{selectedMenu}</Text>
-          <Text style={styles.contentText}>
-            Aqui você poderá colocar a tela de {selectedMenu}. Exemplo: lista de produtos, tabela de orçamentos, gráficos, etc.
-          </Text>
-        </ScrollView>
+              {item}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
+
+      {/* Divider entre Menu e Conteúdo */}
+      <View style={styles.divider} />
+
+      {/* Conteúdo Condicional */}
+      <ScrollView style={styles.contentArea}>
+        {selectedMenu === 'Dashboard' && (
+          <>
+            <Text style={styles.contentTitle}>Dashboard</Text>
+            <Text style={styles.contentText}>Conteúdo inicial, gráficos, etc.</Text>
+          </>
+        )}
+
+        {selectedMenu === 'Produtos' && <ProductScreen />}
+
+        {/* Futuras telas */}
+      </ScrollView>
     </View>
   );
 }
 
-const getStyles = (isDark: boolean) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: isDark ? '#1c1c1c' : '#f2f2f2' },
+const getStyles = (isDark: boolean) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: isDark ? '#1c1c1c' : '#f2f2f2' },
 
-  hiddenToggleButton: {
-    position: 'absolute',
-    top: Platform.OS === 'android' ? StatusBar.currentHeight! + 8 : 10,
-    right: 12,
-    padding: 6,
-    borderRadius: 20,
-    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
-    zIndex: 999,
-  },
+    themeToggleButton: {
+      position: 'absolute',
+      top: Platform.OS === 'android' ? (StatusBar.currentHeight ?? 0) + 10 : 15,
+      right: 15,
+      padding: 8,
+      borderRadius: 20,
+      backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
+      zIndex: 999,
+    },
 
-  statusBarSpacer: {
-    height: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-  },
+    statusBarSpacer: {
+      height: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    },
 
-  header: {
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    backgroundColor: isDark ? '#22384e' : '#2196F3',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-  },
+    header: {
+      paddingHorizontal: 15,
+      paddingVertical: 12,
+      backgroundColor: isDark ? '#22384e' : '#2196F3',
+      borderBottomLeftRadius: 10,
+      borderBottomRightRadius: 10,
+    },
 
-  userSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
+    userSection: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
 
-  avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#ffffff',
-    marginRight: 10,
-  },
+    avatar: {
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      backgroundColor: '#ffffff',
+      marginRight: 10,
+    },
 
-  username: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
+    username: {
+      color: '#fff',
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
 
-  headerButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
+    headerButtons: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
 
-  siteButton: {
-    backgroundColor: '#0D47A1',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 5,
-    marginRight: 8,
-  },
+    siteButton: {
+      backgroundColor: '#0D47A1',
+      paddingVertical: 8,
+      paddingHorizontal: 14,
+      borderRadius: 6,
+      marginRight: 10,
+    },
 
-  logoutButton: {
-    backgroundColor: '#D32F2F',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 5,
-  },
+    logoutButton: {
+      backgroundColor: '#D32F2F',
+      paddingVertical: 8,
+      paddingHorizontal: 14,
+      borderRadius: 6,
+    },
 
-  headerButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
+    headerButtonText: {
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: 14,
+    },
 
-  mainContent: { flex: 1, flexDirection: 'row' },
+    menuContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+      paddingHorizontal: 10,
+      paddingVertical: 10,
+      backgroundColor: isDark ? '#2c2c2c' : '#ECEFF1',
+    },
 
-  sideMenu: {
-    width: 140,
-    backgroundColor: isDark ? '#2c2c2c' : '#ECEFF1',
-    paddingTop: 10,
-    paddingBottom: 10,
-    borderRightWidth: 1,
-    borderRightColor: isDark ? '#444' : '#ccc',
-  },
+    menuItem: {
+      width: '30%',
+      height: 50,
+      marginBottom: 10,
+      borderRadius: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: isDark ? '#333' : '#fff',
+    },
 
-  menuItem: {
-    paddingVertical: 14,
-    paddingHorizontal: 12,
-    marginVertical: 4,
-    borderRadius: 6,
-  },
+    menuItemSelected: {
+      backgroundColor: isDark ? '#555' : '#BBDEFB',
+    },
 
-  menuItemSelected: {
-    backgroundColor: isDark ? '#333' : '#BBDEFB',
-    borderLeftWidth: 4,
-    borderLeftColor: '#0D47A1',
-  },
+    menuItemText: {
+      color: isDark ? '#ccc' : '#37474F',
+      fontWeight: 'bold',
+      fontSize: 15,
+    },
 
-  menuItemText: {
-    color: isDark ? '#ccc' : '#37474F',
-    fontWeight: 'bold',
-  },
+    menuItemTextSelected: {
+      color: '#0D47A1',
+    },
 
-  menuItemTextSelected: {
-    color: '#0D47A1',
-  },
+    divider: {
+      height: 1,
+      backgroundColor: isDark ? '#444' : '#ccc',
+      marginHorizontal: 10,
+      marginBottom: 8,
+    },
 
-  contentArea: {
-    flex: 1,
-    padding: 15,
-  },
+    contentArea: {
+      flex: 1,
+      padding: 18,
+    },
 
-  contentTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: isDark ? '#fff' : '#000',
-  },
+    contentTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      marginBottom: 12,
+      color: isDark ? '#fff' : '#000',
+    },
 
-  contentText: {
-    fontSize: 16,
-    color: isDark ? '#ddd' : '#555',
-  },
-});
+    contentText: {
+      fontSize: 16,
+      lineHeight: 24,
+      color: isDark ? '#ddd' : '#555',
+    },
+  });
