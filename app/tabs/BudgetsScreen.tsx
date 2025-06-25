@@ -7,11 +7,23 @@ export default function BudgetsScreen() {
   const isDark = theme === 'dark';
   const styles = getStyles(isDark);
 
-  const [selectedSubMenu, setSelectedSubMenu] = useState<'listar' | 'novo' | 'fornecedores'>('listar');
+  const [selectedSubMenu, setSelectedSubMenu] = useState<'listar' | 'novo'>('listar');
 
   const mockBudgets = [
-    { id: 1, fornecedor: 'Fornecedor X', valor: 'R$ 800,00', status: 'Aberto' },
-    { id: 2, fornecedor: 'Fornecedor Y', valor: 'R$ 1.500,00', status: 'Em análise' },
+    {
+      id: 1,
+      fornecedor: 'Fornecedor X',
+      descricao: 'Compra de materiais',
+      valor: 'R$ 1.200,00',
+      status: 'Aguardando Aprovação',
+    },
+    {
+      id: 2,
+      fornecedor: 'Fornecedor Y',
+      descricao: 'Equipamentos',
+      valor: 'R$ 2.500,00',
+      status: 'Aprovado',
+    },
   ];
 
   const renderContent = () => {
@@ -19,10 +31,11 @@ export default function BudgetsScreen() {
       case 'listar':
         return (
           <View>
-            <Text style={styles.title}>Orçamentos Salvos:</Text>
+            <Text style={styles.title}>Orçamentos Cadastrados:</Text>
             {mockBudgets.map((budget) => (
               <View key={budget.id} style={styles.card}>
-                <Text style={styles.cardTitle}>Fornecedor: {budget.fornecedor}</Text>
+                <Text style={styles.cardText}>Fornecedor: {budget.fornecedor}</Text>
+                <Text style={styles.cardText}>Descrição: {budget.descricao}</Text>
                 <Text style={styles.cardText}>Valor: {budget.valor}</Text>
                 <Text style={styles.cardText}>Status: {budget.status}</Text>
               </View>
@@ -33,21 +46,13 @@ export default function BudgetsScreen() {
         return (
           <View>
             <Text style={styles.title}>Novo Orçamento:</Text>
-            <TextInput placeholder="Fornecedor" placeholderTextColor={isDark ? '#999' : '#888'} style={styles.input} />
-            <TextInput placeholder="Valor" placeholderTextColor={isDark ? '#999' : '#888'} style={styles.input} keyboardType="numeric" />
-            <TextInput placeholder="Descrição" placeholderTextColor={isDark ? '#999' : '#888'} style={styles.input} multiline />
+            <TextInput placeholder="Fornecedor" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
+            <TextInput placeholder="Descrição" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
+            <TextInput placeholder="Valor" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
+            <TextInput placeholder="Status" style={styles.input} placeholderTextColor={isDark ? '#aaa' : '#666'} />
             <TouchableOpacity style={styles.primaryButton}>
               <Text style={styles.buttonText}>Salvar Orçamento</Text>
             </TouchableOpacity>
-          </View>
-        );
-      case 'fornecedores':
-        return (
-          <View>
-            <Text style={styles.title}>Lista de Fornecedores:</Text>
-            <Text style={styles.cardText}>Fornecedor X</Text>
-            <Text style={styles.cardText}>Fornecedor Y</Text>
-            <Text style={styles.cardText}>Fornecedor Z</Text>
           </View>
         );
       default:
@@ -58,25 +63,11 @@ export default function BudgetsScreen() {
   return (
     <View>
       <View style={styles.buttonRow}>
-        <TouchableOpacity
-          style={[styles.button, selectedSubMenu === 'listar' && styles.buttonSelected]}
-          onPress={() => setSelectedSubMenu('listar')}
-        >
-          <Text style={styles.buttonTextSmall}>Listar Orçamentos</Text>
+        <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('listar')}>
+          <Text style={styles.buttonText}>Listar Orçamentos</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.button, selectedSubMenu === 'novo' && styles.buttonSelected]}
-          onPress={() => setSelectedSubMenu('novo')}
-        >
-          <Text style={styles.buttonTextSmall}>Novo Orçamento</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.button, selectedSubMenu === 'fornecedores' && styles.buttonSelected]}
-          onPress={() => setSelectedSubMenu('fornecedores')}
-        >
-          <Text style={styles.buttonTextSmall}>Fornecedores</Text>
+        <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('novo')}>
+          <Text style={styles.buttonText}>Novo Orçamento</Text>
         </TouchableOpacity>
       </View>
 
@@ -85,73 +76,39 @@ export default function BudgetsScreen() {
   );
 }
 
-const getStyles = (isDark: boolean) =>
-  StyleSheet.create({
-    buttonRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 12 },
-
-    button: {
-      paddingVertical: 10,
-      paddingHorizontal: 15,
-      backgroundColor: isDark ? '#555' : '#BBDEFB',
-      borderRadius: 6,
-      marginRight: 8,
-      marginBottom: 8,
-    },
-
-    buttonSelected: {
-      backgroundColor: isDark ? '#777' : '#2196F3',
-    },
-
-    buttonTextSmall: {
-      fontWeight: 'bold',
-      color: isDark ? '#fff' : '#000',
-    },
-
-    title: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginBottom: 10,
-      color: isDark ? '#fff' : '#000',
-    },
-
-    input: {
-      borderWidth: 1,
-      borderColor: isDark ? '#555' : '#ccc',
-      padding: 10,
-      borderRadius: 6,
-      marginBottom: 10,
-      backgroundColor: isDark ? '#222' : '#fff',
-      color: isDark ? '#fff' : '#000',
-    },
-
-    card: {
-      backgroundColor: isDark ? '#333' : '#fff',
-      borderRadius: 6,
-      padding: 12,
-      marginBottom: 10,
-      shadowColor: '#000',
-      shadowOpacity: 0.1,
-      shadowOffset: { width: 0, height: 1 },
-      shadowRadius: 2,
-    },
-
-    cardTitle: {
-      fontWeight: 'bold',
-      color: isDark ? '#fff' : '#000',
-      marginBottom: 4,
-    },
-
-    cardText: {
-      color: isDark ? '#ccc' : '#444',
-      marginBottom: 2,
-    },
-
-    primaryButton: {
-      backgroundColor: '#0D47A1',
-      paddingVertical: 12,
-      borderRadius: 6,
-      alignItems: 'center',
-    },
-
-    buttonText: { color: '#fff', fontWeight: 'bold' },
-  });
+const getStyles = (isDark: boolean) => StyleSheet.create({
+  buttonRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 10 },
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: isDark ? '#444' : '#BBDEFB',
+    borderRadius: 6,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: isDark ? '#fff' : '#000' },
+  input: {
+    borderWidth: 1,
+    borderColor: isDark ? '#555' : '#ccc',
+    padding: 8,
+    borderRadius: 5,
+    marginBottom: 10,
+    color: isDark ? '#fff' : '#000',
+    backgroundColor: isDark ? '#222' : '#fff',
+  },
+  card: {
+    backgroundColor: isDark ? '#333' : '#fff',
+    padding: 10,
+    marginBottom: 8,
+    borderRadius: 6,
+  },
+  cardText: { color: isDark ? '#ddd' : '#333', marginBottom: 2 },
+  primaryButton: {
+    backgroundColor: '#0D47A1',
+    paddingVertical: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: { color: isDark ? '#fff' : '#000', fontWeight: 'bold' },
+});

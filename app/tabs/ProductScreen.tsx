@@ -8,7 +8,27 @@ export default function ProductScreen() {
   const styles = getStyles(isDark);
 
   const [selectedSubMenu, setSelectedSubMenu] = useState<'listar' | 'editar' | 'novo'>('listar');
-  const mockProducts = ['Produto A', 'Produto B', 'Produto C'];
+
+  const mockProdutos = [
+    {
+      nome: 'Produto A',
+      fabricante: 'Empresa X',
+      validade: '2026-01-10',
+      custo: 'R$ 10,00',
+      venda: 'R$ 20,00',
+      quantidade: 100,
+      codBarras: '7890001234567',
+    },
+    {
+      nome: 'Produto B',
+      fabricante: 'Empresa Y',
+      validade: '2025-12-05',
+      custo: 'R$ 15,00',
+      venda: 'R$ 30,00',
+      quantidade: 50,
+      codBarras: '7890007654321',
+    },
+  ];
 
   const renderContent = () => {
     switch (selectedSubMenu) {
@@ -16,8 +36,16 @@ export default function ProductScreen() {
         return (
           <View>
             <Text style={styles.title}>Lista de Produtos:</Text>
-            {mockProducts.map((product, index) => (
-              <Text key={index} style={styles.item}>{product}</Text>
+            {mockProdutos.map((produto, index) => (
+              <View key={index} style={styles.card}>
+                <Text style={styles.cardText}>Nome: {produto.nome}</Text>
+                <Text style={styles.cardText}>Fabricante: {produto.fabricante}</Text>
+                <Text style={styles.cardText}>Validade: {produto.validade}</Text>
+                <Text style={styles.cardText}>Preço de Custo: {produto.custo}</Text>
+                <Text style={styles.cardText}>Preço de Venda: {produto.venda}</Text>
+                <Text style={styles.cardText}>Quantidade: {produto.quantidade}</Text>
+                <Text style={styles.cardText}>Código de Barras: {produto.codBarras}</Text>
+              </View>
             ))}
           </View>
         );
@@ -25,36 +53,20 @@ export default function ProductScreen() {
         return (
           <View>
             <Text style={styles.title}>Editar Produto:</Text>
-            <TextInput
-              placeholder="Buscar produto para editar..."
-              placeholderTextColor={isDark ? '#999' : '#888'}
-              style={styles.input}
-            />
-            <TouchableOpacity style={styles.primaryButton}>
-              <Text style={styles.buttonText}>Editar</Text>
-            </TouchableOpacity>
+            <TextInput placeholder="Digite nome ou código" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
           </View>
         );
       case 'novo':
         return (
           <View>
-            <Text style={styles.title}>Adicionar Novo Produto:</Text>
-            <TextInput
-              placeholder="Nome do Produto..."
-              placeholderTextColor={isDark ? '#999' : '#888'}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Descrição..."
-              placeholderTextColor={isDark ? '#999' : '#888'}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Preço..."
-              placeholderTextColor={isDark ? '#999' : '#888'}
-              style={styles.input}
-              keyboardType="numeric"
-            />
+            <Text style={styles.title}>Novo Produto:</Text>
+            <TextInput placeholder="Nome do Produto" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
+            <TextInput placeholder="Fabricante" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
+            <TextInput placeholder="Data de Validade" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
+            <TextInput placeholder="Preço de Custo" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
+            <TextInput placeholder="Preço de Venda" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
+            <TextInput placeholder="Quantidade" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
+            <TextInput placeholder="Código de Barras" style={styles.input} placeholderTextColor={isDark ? '#ccc' : '#888'} />
             <TouchableOpacity style={styles.primaryButton}>
               <Text style={styles.buttonText}>Salvar Produto</Text>
             </TouchableOpacity>
@@ -69,13 +81,13 @@ export default function ProductScreen() {
     <View>
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('listar')}>
-          <Text style={styles.buttonTextSmall}>Listar Produtos</Text>
+          <Text style={styles.buttonText}>Listar Produtos</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('editar')}>
-          <Text style={styles.buttonTextSmall}>Editar Produto</Text>
+          <Text style={styles.buttonText}>Editar Produto</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => setSelectedSubMenu('novo')}>
-          <Text style={styles.buttonTextSmall}>Novo Produto</Text>
+          <Text style={styles.buttonText}>Novo Produto</Text>
         </TouchableOpacity>
       </View>
 
@@ -84,54 +96,38 @@ export default function ProductScreen() {
   );
 }
 
-const getStyles = (isDark: boolean) =>
-  StyleSheet.create({
-    buttonRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 12 },
-
-    button: {
-      paddingVertical: 10,
-      paddingHorizontal: 15,
-      backgroundColor: isDark ? '#555' : '#BBDEFB',
-      borderRadius: 6,
-      marginRight: 8,
-      marginBottom: 8,
-    },
-
-    buttonTextSmall: {
-      fontWeight: 'bold',
-      color: isDark ? '#fff' : '#000',
-    },
-
-    title: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginBottom: 10,
-      color: isDark ? '#fff' : '#000',
-    },
-
-    input: {
-      borderWidth: 1,
-      borderColor: isDark ? '#555' : '#ccc',
-      padding: 10,
-      borderRadius: 6,
-      marginBottom: 10,
-      backgroundColor: isDark ? '#222' : '#fff',
-      color: isDark ? '#fff' : '#000',
-    },
-
-    item: {
-      borderBottomWidth: 1,
-      borderBottomColor: isDark ? '#444' : '#ccc',
-      paddingVertical: 6,
-      color: isDark ? '#ccc' : '#333',
-    },
-
-    primaryButton: {
-      backgroundColor: '#0D47A1',
-      paddingVertical: 12,
-      borderRadius: 6,
-      alignItems: 'center',
-    },
-
-    buttonText: { color: '#fff', fontWeight: 'bold' },
-  });
+const getStyles = (isDark: boolean) => StyleSheet.create({
+  buttonRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 10 },
+  button: {
+    padding: 10,
+    backgroundColor: isDark ? '#444' : '#BBDEFB',
+    marginRight: 8,
+    marginBottom: 8,
+    borderRadius: 6,
+  },
+  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: isDark ? '#fff' : '#000' },
+  input: {
+    borderWidth: 1,
+    borderColor: isDark ? '#555' : '#ccc',
+    padding: 8,
+    borderRadius: 5,
+    marginBottom: 10,
+    color: isDark ? '#fff' : '#000',
+  },
+  primaryButton: {
+    backgroundColor: '#0D47A1',
+    paddingVertical: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: { color: isDark ? '#fff' : '#000', fontWeight: 'bold' },
+  card: {
+    backgroundColor: isDark ? '#333' : '#fff',
+    padding: 10,
+    marginBottom: 8,
+    borderRadius: 6,
+    elevation: 1,
+  },
+  cardText: { color: isDark ? '#ddd' : '#333', marginBottom: 2 },
+});
